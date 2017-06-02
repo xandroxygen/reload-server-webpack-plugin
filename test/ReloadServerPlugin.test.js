@@ -33,9 +33,9 @@ describe("ReloadServerPlugin", function() {
       expect(this.setupMaster).toHaveBeenCalled();
     });
 
-    it("should default to server.js", function() {
+    it("should default to server.js and empty arrays", function() {
       expect(this.setupMaster.calls[0].arguments).toEqual([
-        { exec: path.join(process.cwd(), "server.js") },
+        { exec: path.join(process.cwd(), "server.js"), execArgv: [] },
       ]);
     });
 
@@ -45,6 +45,17 @@ describe("ReloadServerPlugin", function() {
 
     it("should listen to online events", function() {
       expect(this.on.calls[0].arguments[0]).toEqual("online");
+    });
+  });
+
+  describe("._getArgs", function() {
+    beforeEach(function() {
+        this.nodeArgs = ['--this', '--that'];
+        this.args = ['--other'];
+    });
+
+    it("should construct arguments", function() {
+        expect(this.plugin._getArgs(this.nodeArgs, this.args)).toEqual(['--this', '--that', '--', '--other']);
     });
   });
 

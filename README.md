@@ -31,8 +31,9 @@ module.exports = {
   ...
   plugins: [
     new ReloadServerPlugin({
-      // Defaults to process.cwd() + "/server.js"
-      script: "path/to/server.js",
+      script: "path/to/server.js", // Defaults to process.cwd() + "/server.js"
+      nodeArgs: ["--inspect"], // pass args to node, defaults to []
+      args: ['--your-arg-here'] // pass args to script, defaults to []
     }),
   ],
   ...

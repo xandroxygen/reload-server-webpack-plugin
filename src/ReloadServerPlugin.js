@@ -3,15 +3,19 @@ import path from "path";
 
 const defaultOptions = {
   script: "server.js",
+  nodeArgs: [],
+  args: []
 };
 
 export default class ReloadServerPlugin {
-  constructor({ script } = defaultOptions) {
+  constructor({ script, nodeArgs = [], args = [] } = defaultOptions) {
     this.done = null;
     this.workers = [];
+    const execArgv = this._getArgs(nodeArgs, args);
 
     cluster.setupMaster({
       exec: path.resolve(process.cwd(), script),
+      execArgv
     });
 
     cluster.on("online", (worker) => {
@@ -21,6 +25,15 @@ export default class ReloadServerPlugin {
         this.done();
       }
     });
+  }
+
+  _getArgs(nodeArgs, args) {
+    let execArgv = [...nodeArgs, ...process.execArgv];
+    if (args.length > 0) {
+      execArgv.push('--');
+      execArgv = [...execArgv, ...args];
+    }
+    return execArgv;
   }
 
   apply(compiler) {
